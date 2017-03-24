@@ -899,6 +899,8 @@ statement:
                                  { COMPGOTO (smooth_expression (fst $3), (*handleLoc*) $1) }
 |   ASM asmattr LPAREN asmtemplate asmoutputs RPAREN SEMICOLON
                         { ASM ($2, $4, $5, (*handleLoc*) $1) }
+|   ASM GOTO asmattr LPAREN asmtemplate asmoutputs RPAREN SEMICOLON
+                        { ASM ($3, $5, $6, (*handleLoc*) $1) }
 |   MSASM               { ASM ([], [fst $1], None, (*handleLoc*)(snd $1))}
 |   TRY block EXCEPT paren_comma_expression block
                         { let b, _, _ = $2 in
@@ -1516,8 +1518,8 @@ asmtemplate:
 asmoutputs: 
   /* empty */           { None }
 | COLON asmoperands asminputs
-                        { let (ins, clobs) = $3 in
-                          Some {aoutputs = $2; ainputs = ins; aclobbers = clobs} }
+                        { let (ins, (clobs, lbls)) = $3 in
+                          Some {aoutputs = $2; ainputs = ins; aclobbers = clobs; aglabels = lbls} }
 ;
 asmoperands:
      /* empty */                        { [] }
@@ -1532,7 +1534,7 @@ asmoperand:
 |    asmopname string_constant LPAREN error RPAREN         { ($1, fst $2, NOTHING ) } 
 ; 
 asminputs: 
-  /* empty */                { ([], []) }
+  /* empty */                { ([], ([], [])) }
 | COLON asmoperands asmclobber
                         { ($2, $3) }
 ;
@@ -1542,8 +1544,8 @@ asmopname:
 ;
 
 asmclobber:
-    /* empty */                         { [] }
-| COLON asmcloberlst                    { $2 }
+    /* empty */                         { ([], []) }
+| COLON asmcloberlst asmglabels         { ($2, $3) }
 ;
 asmcloberlst:
     /* empty */                         { [] }
@@ -1553,7 +1555,11 @@ asmcloberlst_ne:
    one_string_constant                           { [$1] }
 |  one_string_constant COMMA asmcloberlst_ne     { $1 :: $3 }
 ;
-  
+
+asmglabels:
+    /* empty */                         { [] }
+| COLON local_label_names               { $2 }
+;
 %%
 
 

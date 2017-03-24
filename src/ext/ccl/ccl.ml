@@ -1551,7 +1551,7 @@ let analyzeStmt (stmt : stmt) (state : state) : bool =
                end
            | Set (lv, e, l) ->
                doSet lv (typeOf e) (summaryToFacts (evaluateExp e state) state)
-           | Asm (_, _, _, _, _, l) ->
+           | Asm (_, _, _, _, _, _, l) ->
                if not !suppress then
                  ignore (warning "ignoring asm")
            end)

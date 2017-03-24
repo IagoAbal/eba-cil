@@ -427,7 +427,7 @@ class markReachableVisitor
 	SkipChildren
 
   method vinst = function
-      Asm (_, tmpls, _, _, _, _) when !msvcMode -> 
+      Asm (_, tmpls, _, _, _, _, _) when !msvcMode -> 
           (* If we have inline assembly on MSVC, we cannot tell which locals 
            * are referenced. Keep thsem all *)
         (match !currentFunc with 

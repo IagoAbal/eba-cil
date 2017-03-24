@@ -6577,7 +6577,7 @@ and doStatement (s : A.statement) : chunk =
         let attr' = doAttributes asmattr in
         currentLoc := loc';
         let stmts : chunk ref = ref empty in
-	let (tmpls', outs', ins', clobs') =
+	let (tmpls', outs', ins', clobs', lbls') =
 	  match details with
 	  | None ->
 	      let tmpls' =
@@ -6588,8 +6588,8 @@ and doStatement (s : A.statement) : chunk =
 		  let escape = Str.global_replace pattern "%%" in
 		  Util.list_map escape tmpls
 	      in
-	      (tmpls', [], [], [])
-	  | Some { aoutputs = outs; ainputs = ins; aclobbers = clobs } ->
+	      (tmpls', [], [], [], [])
+	  | Some { aoutputs = outs; ainputs = ins; aclobbers = clobs; aglabels = lbls } ->
               let outs' =
 		Util.list_map
 		  (fun (id, c, e) ->
@@ -6612,10 +6612,10 @@ and doStatement (s : A.statement) : chunk =
 		    (id, c, e'))
 		  ins
               in
-	      (tmpls, outs', ins', clobs)
+	      (tmpls, outs', ins', clobs, lbls)
 	in
         !stmts @@
-        (i2c (Asm(attr', tmpls', outs', ins', clobs', loc')))
+        (i2c (Asm(attr', tmpls', outs', ins', clobs', lbls', loc')))
 
     | TRY_FINALLY (b, h, loc) -> 
         let loc' = convLoc loc in

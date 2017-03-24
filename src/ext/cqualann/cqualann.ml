@@ -241,7 +241,7 @@ let localVarAnn label func v typ sz: instr =
   in
   Asm([], [strOf annstr], [None, "=m", lv], 
       (* ["0", Lval(lv)] *)
-      [], [], !currentLoc)
+      [], [], [], !currentLoc)
 
 
 
@@ -258,7 +258,7 @@ let localANN = "ANN_LOCAL"
   
 let allocAnn typeStr: instr =
   let annstr = dprintf "#ANN(%s, %a)" allocANN insert typeStr in
-  Asm(volatile, [strOf annstr], [], [], [], !currentLoc)
+  Asm(volatile, [strOf annstr], [], [], [], [], !currentLoc)
 
 (*******   Strings  *******)
 
