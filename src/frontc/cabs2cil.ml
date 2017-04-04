@@ -4035,7 +4035,7 @@ and doExp (asconst: bool)   (* This expression is used as a constant *)
 
     | A.CALL(f, args) -> 
         if asconst then
-          ignore (warn "CALL in constant");
+          ignore (warnOpt "CALL in constant");
         let (sf, f', ft') = 
           match f with                  (* Treat the VARIABLE case separate 
                                          * because we might be calling a 
