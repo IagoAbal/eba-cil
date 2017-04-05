@@ -1,4 +1,6 @@
 opam-version: "1.2"
+name: "cil"
+version: "1.7.4-eba"
 authors: ["gabriel@kerneis.info"]
 maintainer: "gabriel@kerneis.info"
 homepage: "https://cil-project.github.io/cil/"
