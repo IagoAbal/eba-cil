@@ -531,6 +531,7 @@ and childrenExpression vis e =
       let b' = visitCabsBlock vis b in
       if b' != b then GNU_BODY b' else e
   | EXPR_PATTERN _ -> e
+  | GENERIC (expr, lst) -> GENERIC (ve expr, List.map (fun (opt, expr) -> (opt, ve expr)) lst)
         
 and visitCabsInitExpression vis (ie: init_expression) : init_expression = 
   doVisit vis vis#vinitexpr childrenInitExpression ie

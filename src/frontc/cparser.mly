@@ -36,7 +36,7 @@
  *
  **)
 (**
-** 1.0	3.22.99	Hugues Cassé	First version.
+** 1.0	3.22.99	Hugues CassÃ© 	First version.
 ** 2.0  George Necula 12/12/00: Practically complete rewrite.
 *)
 */
@@ -256,7 +256,7 @@ let transformOffsetOf (speclist, dtype) member =
 %token EOF
 %token<Cabs.cabsloc> CHAR INT BOOL DOUBLE FLOAT VOID INT128 INT64 INT32
 %token<Cabs.cabsloc> ENUM STRUCT TYPEDEF UNION
-%token<Cabs.cabsloc> SIGNED UNSIGNED LONG SHORT
+%token<Cabs.cabsloc> SIGNED UNSIGNED LONG SHORT GENERIC
 %token<Cabs.cabsloc> VOLATILE EXTERN STATIC CONST RESTRICT AUTO REGISTER
 %token<Cabs.cabsloc> THREAD
 
@@ -469,10 +469,27 @@ primary_expression:                     /*(* 6.5.1. *)*/
 		        {PAREN (smooth_expression (fst $1)), snd $1}
 |		LPAREN block RPAREN
 		        { GNU_BODY (fst3 $2), $1 }
-
      /*(* Next is Scott's transformer *)*/
 |               AT_EXPR LPAREN IDENT RPAREN         /* expression pattern variable */
                          { EXPR_PATTERN(fst $3), $1 }
+| generic_selection
+    { $1 }
+
+generic_selection: 
+| GENERIC LPAREN assignment_expression COMMA generic_assoc_list RPAREN
+    { GENERIC((fst $3), $5), $1 }
+
+generic_assoc_list:
+| generic_association 
+    { [$1] }
+| generic_assoc_list COMMA generic_association
+    { $3 :: $1 }
+
+generic_association: 
+| type_name COLON assignment_expression
+    { Some($1), (fst $3) }
+| DEFAULT COLON assignment_expression
+    { None, (fst $3) }
 ;
 
 postfix_expression:                     /*(* 6.5.2 *)*/
