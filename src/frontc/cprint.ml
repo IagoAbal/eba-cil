@@ -41,20 +41,20 @@
 ** File:	cprint.ml
 ** Version:	2.1e
 ** Date:	9.1.99
-** Author:	Hugues Cassé
+** Author:	Hugues CassÈ
 **
-**	1.0		2.22.99	Hugues Cassé	First version.
-**	2.0		3.18.99	Hugues Cassé	Compatible with Frontc 2.1, use of CAML
+**	1.0		2.22.99	Hugues CassÈ	First version.
+**	2.0		3.18.99	Hugues CassÈ	Compatible with Frontc 2.1, use of CAML
 **									pretty printer.
-**	2.1		3.22.99	Hugues Cassé	More efficient custom pretty printer used.
-**	2.1a	4.12.99	Hugues Cassé	Correctly handle:
+**	2.1		3.22.99	Hugues CassÈ	More efficient custom pretty printer used.
+**	2.1a	4.12.99	Hugues CassÈ	Correctly handle:
 **									char *m, *m, *p; m + (n - p)
-**	2.1b	4.15.99	Hugues Cassé	x + (y + z) stays x + (y + z) for
+**	2.1b	4.15.99	Hugues CassÈ	x + (y + z) stays x + (y + z) for
 **									keeping computation order.
-**	2.1c	7.23.99	Hugues Cassé	Improvement of case and default display.
-**	2.1d	8.25.99	Hugues Cassé	Rebuild escape sequences in string and
+**	2.1c	7.23.99	Hugues CassÈ	Improvement of case and default display.
+**	2.1d	8.25.99	Hugues CassÈ	Rebuild escape sequences in string and
 **									characters.
-**	2.1e	9.1.99	Hugues Cassé	Fix, recognize and correctly display '\0'.
+**	2.1e	9.1.99	Hugues CassÈ	Fix, recognize and correctly display '\0'.
 *)
 
 (* George Necula: I changed this pretty dramatically since CABS changed *)
@@ -62,7 +62,7 @@ open Cabs
 open Escape
 open Whitetrack
 
-let version = "Cprint 2.1e 9.1.99 Hugues Cassé"
+let version = "Cprint 2.1e 9.1.99 Hugues CassÈ"
 
 type loc = { line : int; file : string }
 
@@ -406,6 +406,7 @@ and get_operator exp =
   | MEMBEROFPTR (exp, fld) -> ("", 15)
   | GNU_BODY _ -> ("", 17)
   | EXPR_PATTERN _ -> ("", 16)     (* sm: not sure about this *)
+  | GENERIC _ -> ("", 16)
 
 and print_comma_exps exps =
   print_commas false print_expression exps
@@ -882,6 +883,7 @@ and print_def def =
       print_expression destexpr;
       print " }";
       force_new_line()
+  | STATIC_ASSERT _ -> ()
 
 
 (* sm: print a comment if the printComments flag is set *)

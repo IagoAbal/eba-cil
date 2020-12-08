@@ -4038,7 +4038,7 @@ and doExp (asconst: bool)   (* This expression is used as a constant *)
     end
 
     | A.GENERIC (e, lst) ->
-      let compare_types t_1 t_2 =
+        let compare_types t_1 t_2 =
           match t_1, t_2 with
             | Some t_1', Some t_2'  -> compareTypesNoAttributes t_1' t_2'
             | _                     -> false
@@ -4057,7 +4057,7 @@ and doExp (asconst: bool)   (* This expression is used as a constant *)
         lst in
 
         (* Find the type of the value fed to the generic expression (T above). *)
-        let (chunk, expr, t_typ) = doExp false e (AExp None) in
+        let (_, _, t_typ) = doExp false e (AExp None) in
         
         (* Find the matching type in the type matches. *)
         let found_match = List.find_opt (fun (match_type, e) -> compare_types (Some t_typ) match_type) mapped in
@@ -4072,7 +4072,7 @@ and doExp (asconst: bool)   (* This expression is used as a constant *)
           | None, Some((None, exp)) -> doExp false exp (AExp None)
           (* No types matched, raise an error.
              We should hopefully see a compile time error before we reach this case. *)
-          | _ -> E.s (error "Could not find matching type for %a in _Generic @" d_plaintype t_typ)
+          | _ -> E.s (error "Could not find matching type for %a in _Generic" d_plaintype t_typ)
         in
         res
 
@@ -5750,6 +5750,7 @@ and doDecl (isglobal: bool) : A.definition -> chunk = function
   | A.TRANSFORMER (_, _, _) -> E.s (E.bug "TRANSFORMER in cabs2cil input")
   | A.EXPRTRANSFORMER (_, _, _) -> 
       E.s (E.bug "EXPRTRANSFORMER in cabs2cil input")
+  | A.STATIC_ASSERT _ -> empty
         
   (* If there are multiple definitions of extern inline, turn all but the 
    * first into a prototype *)

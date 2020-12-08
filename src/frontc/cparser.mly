@@ -36,7 +36,7 @@
  *
  **)
 (**
-** 1.0	3.22.99	Hugues Cassé 	First version.
+** 1.0	3.22.99	Hugues CassÈ 	First version.
 ** 2.0  George Necula 12/12/00: Practically complete rewrite.
 *)
 */
@@ -256,7 +256,7 @@ let transformOffsetOf (speclist, dtype) member =
 %token EOF
 %token<Cabs.cabsloc> CHAR INT BOOL DOUBLE FLOAT VOID INT128 INT64 INT32
 %token<Cabs.cabsloc> ENUM STRUCT TYPEDEF UNION
-%token<Cabs.cabsloc> SIGNED UNSIGNED LONG SHORT GENERIC
+%token<Cabs.cabsloc> SIGNED UNSIGNED LONG SHORT GENERIC STATIC_ASSERT
 %token<Cabs.cabsloc> VOLATILE EXTERN STATIC CONST RESTRICT AUTO REGISTER
 %token<Cabs.cabsloc> THREAD
 
@@ -486,10 +486,16 @@ generic_assoc_list:
     { $3 :: $1 }
 
 generic_association: 
-| type_name COLON assignment_expression
+| type_name COLON expression
     { Some($1), (fst $3) }
-| DEFAULT COLON assignment_expression
+| DEFAULT COLON expression
     { None, (fst $3) }
+
+static_assert: 
+| STATIC_ASSERT LPAREN expression RPAREN
+    { STATIC_ASSERT (fst $3, None, $1) }
+| STATIC_ASSERT LPAREN expression COMMA string_constant RPAREN
+    { STATIC_ASSERT (fst $3, Some(fst $5), $1) }
 ;
 
 postfix_expression:                     /*(* 6.5.2 *)*/
@@ -946,6 +952,7 @@ declaration:                                /* ISO 6.7.*/
                                        { doDeclaration ((*handleLoc*)(snd $1)) (fst $1) $2 }
 |   decl_spec_list SEMICOLON	       
                                        { doDeclaration ((*handleLoc*)(snd $1)) (fst $1) [] }
+|   static_assert                      { $1 }
 ;
 init_declarator_list:                       /* ISO 6.7 */
     init_declarator                              { [$1] }
@@ -1527,6 +1534,7 @@ asmattr:
      /* empty */                        { [] }
 |    VOLATILE  asmattr                  { ("volatile", []) :: $2 }
 |    CONST asmattr                      { ("const", []) :: $2 } 
+|    INLINE asmattr                     { ("inline", []) :: $2 }
 ;
 asmtemplate: 
     one_string_constant                          { [$1] }
