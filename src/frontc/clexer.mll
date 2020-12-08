@@ -37,7 +37,7 @@
  *)
 (* FrontC -- lexical analyzer
 **
-** 1.0	3.22.99	Hugues Cassé	First version.
+** 1.0	3.22.99	Hugues CassÈ	First version.
 ** 2.0  George Necula 12/12/00: Many extensions
 *)
 {
@@ -176,6 +176,7 @@ let init_lexicon _ =
       ("__typeof", fun loc -> TYPEOF loc);
       ("typeof", fun loc -> TYPEOF loc); 
       ("_Generic", fun loc -> GENERIC loc); 
+      ("_Static_assert", fun loc -> STATIC_ASSERT loc); 
       ("__alignof", fun loc -> ALIGNOF loc);
       ("__alignof__", fun loc -> ALIGNOF loc);
       ("__volatile__", fun loc -> VOLATILE loc);
