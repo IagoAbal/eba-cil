@@ -5711,6 +5711,7 @@ and doDecl (isglobal: bool) : A.definition -> chunk = function
   | A.TRANSFORMER (_, _, _) -> E.s (E.bug "TRANSFORMER in cabs2cil input")
   | A.EXPRTRANSFORMER (_, _, _) -> 
       E.s (E.bug "EXPRTRANSFORMER in cabs2cil input")
+  | A.STATIC_ASSERT _ -> empty
         
   (* If there are multiple definitions of extern inline, turn all but the 
    * first into a prototype *)

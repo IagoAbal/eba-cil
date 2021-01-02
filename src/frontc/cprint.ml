@@ -881,6 +881,7 @@ and print_def def =
       print_expression destexpr;
       print " }";
       force_new_line()
+  | STATIC_ASSERT _ -> ()
 
 
 (* sm: print a comment if the printComments flag is set *)

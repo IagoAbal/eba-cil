@@ -257,6 +257,7 @@ let transformOffsetOf (speclist, dtype) member =
 %token<Cabs.cabsloc> CHAR INT BOOL DOUBLE FLOAT VOID INT128 INT64 INT32
 %token<Cabs.cabsloc> ENUM STRUCT TYPEDEF UNION
 %token<Cabs.cabsloc> SIGNED UNSIGNED LONG SHORT
+%token<Cabs.cabsloc> STATIC_ASSERT
 %token<Cabs.cabsloc> VOLATILE EXTERN STATIC CONST RESTRICT AUTO REGISTER
 %token<Cabs.cabsloc> THREAD
 
@@ -473,6 +474,13 @@ primary_expression:                     /*(* 6.5.1. *)*/
      /*(* Next is Scott's transformer *)*/
 |               AT_EXPR LPAREN IDENT RPAREN         /* expression pattern variable */
                          { EXPR_PATTERN(fst $3), $1 }
+;
+
+static_assert:
+| STATIC_ASSERT LPAREN expression RPAREN
+    { STATIC_ASSERT (fst $3, None, $1) }
+| STATIC_ASSERT LPAREN expression COMMA string_constant RPAREN
+    { STATIC_ASSERT (fst $3, Some(fst $5), $1) }
 ;
 
 postfix_expression:                     /*(* 6.5.2 *)*/
@@ -929,6 +937,7 @@ declaration:                                /* ISO 6.7.*/
                                        { doDeclaration ((*handleLoc*)(snd $1)) (fst $1) $2 }
 |   decl_spec_list SEMICOLON	       
                                        { doDeclaration ((*handleLoc*)(snd $1)) (fst $1) [] }
+|   static_assert                      { $1 }
 ;
 init_declarator_list:                       /* ISO 6.7 */
     init_declarator                              { [$1] }
