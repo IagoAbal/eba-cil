@@ -51,6 +51,7 @@ open Cabshelper
 open Pretty
 open Cil
 open Cilint
+open Expcompare
 open Trace
 
 
@@ -4036,6 +4037,45 @@ and doExp (asconst: bool)   (* This expression is used as a constant *)
               (Lval tmp)
               intType
     end
+
+    | A.GENERIC (e, lst) ->
+        let compare_types t_1 t_2 =
+          match t_1, t_2 with
+            | Some t_1', Some t_2'  -> compareTypesNoAttributes t_1' t_2'
+            | _                     -> false
+        in
+
+        (* Map over all type "matches" [type_1:expr_1] defined in  _Generic(T, type_1: expr_1, ..., default: expr_n). *)
+        let mapped = List.map (fun (opt, exp) ->
+          match opt with
+          (* If None, then we've found the default. *)
+          | None -> (None, exp)
+          (* If Some, then we've found a type match (type_1 above above). Find the Cil.typ of this type. *)
+          | Some (spec, decl) ->
+              let declaration_type = doOnlyType spec decl in
+              (Some declaration_type, exp)
+        )
+        lst in
+
+        (* Find the type of the value fed to the generic expression (T above). *)
+        let (_, _, t_typ) = doExp false e (AExp None) in
+
+        (* Find the matching type in the type matches. *)
+        let found_match = List.find_opt (fun (match_type, e) -> compare_types (Some t_typ) match_type) mapped in
+        (* Find the default expression. *)
+        let found_default = List.find_opt (fun (match_type, e) -> match_type == None) mapped in
+
+        let res = match found_match, found_default with
+          (* A matching type in the assoc. list of _Generic was found,
+             find blockchunk and Cil expression for the matching expression. *)
+          | Some(Some res, exp), _ -> doExp false exp (AExp None)
+          (* No types matched, use the default expression. *)
+          | None, Some((None, exp)) -> doExp false exp (AExp None)
+          (* No types matched, raise an error.
+             We should hopefully see a compile time error before we reach this case. *)
+          | _ -> E.s (error "Could not find matching type for %a in _Generic" d_plaintype t_typ)
+        in
+        res
 
     | A.CALL(f, args) -> 
         if asconst then

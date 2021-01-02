@@ -257,7 +257,7 @@ let transformOffsetOf (speclist, dtype) member =
 %token<Cabs.cabsloc> CHAR INT BOOL DOUBLE FLOAT VOID INT128 INT64 INT32
 %token<Cabs.cabsloc> ENUM STRUCT TYPEDEF UNION
 %token<Cabs.cabsloc> SIGNED UNSIGNED LONG SHORT
-%token<Cabs.cabsloc> STATIC_ASSERT
+%token<Cabs.cabsloc> GENERIC STATIC_ASSERT
 %token<Cabs.cabsloc> VOLATILE EXTERN STATIC CONST RESTRICT AUTO REGISTER
 %token<Cabs.cabsloc> THREAD
 
@@ -474,6 +474,27 @@ primary_expression:                     /*(* 6.5.1. *)*/
      /*(* Next is Scott's transformer *)*/
 |               AT_EXPR LPAREN IDENT RPAREN         /* expression pattern variable */
                          { EXPR_PATTERN(fst $3), $1 }
+| generic_selection
+    { $1 }
+;
+
+generic_selection:
+| GENERIC LPAREN assignment_expression COMMA generic_assoc_list RPAREN
+    { GENERIC((fst $3), $5), $1 }
+;
+
+generic_assoc_list:
+| generic_association
+    { [$1] }
+| generic_assoc_list COMMA generic_association
+    { $3 :: $1 }
+;
+
+generic_association:
+| type_name COLON expression
+    { Some($1), (fst $3) }
+| DEFAULT COLON expression
+    { None, (fst $3) }
 ;
 
 static_assert:

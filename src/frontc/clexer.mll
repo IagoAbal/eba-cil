@@ -175,6 +175,7 @@ let init_lexicon _ =
       ("__typeof__", fun loc -> TYPEOF loc);
       ("__typeof", fun loc -> TYPEOF loc);
       ("typeof", fun loc -> TYPEOF loc); 
+      ("_Generic", fun loc -> GENERIC loc);
       ("_Static_assert", fun loc -> STATIC_ASSERT loc);
       ("__alignof", fun loc -> ALIGNOF loc);
       ("__alignof__", fun loc -> ALIGNOF loc);
