@@ -1510,6 +1510,7 @@ asmattr:
      /* empty */                        { [] }
 |    VOLATILE  asmattr                  { ("volatile", []) :: $2 }
 |    CONST asmattr                      { ("const", []) :: $2 } 
+|    INLINE asmattr                     { ("inline", []) :: $2 }
 ;
 asmtemplate: 
     one_string_constant                          { [$1] }
